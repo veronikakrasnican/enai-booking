@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENAI Summer School 2026 – Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EE; --dark: #1C1C1A; --mid: #4A4A46; --muted: #8A8A84;
+    --border: #DDD9D0; --green: #2D6A4F; --green-light: #EAF4EF; --green-border: #A8D5BC;
+    --red: #8B2E2E; --red-light: #FAEDED; --accent: #C17B3F; --accent-light: #FBF3E8; --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  header { border-bottom: 1px solid var(--border); padding: 1.5rem 2rem; background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .header-left { display: flex; align-items: center; gap: 1rem; }
+  .logo-mark { width: 36px; height: 36px; background: var(--dark); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--cream); font-family: 'DM Serif Display', serif; font-size: 16px; flex-shrink: 0; }
+  .header-text h1 { font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400; }
+  .header-text p { font-size: 13px; color: var(--muted); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 400; color: var(--dark); margin-bottom: 1rem; }
+  .btn { padding: 9px 18px; border-radius: 7px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1px solid var(--border); background: var(--white); color: var(--dark); transition: all 0.15s; font-weight: 500; }
+  .btn:hover { background: var(--cream); border-color: var(--dark); }
+  .btn-dark { background: var(--dark); color: var(--white); border-color: var(--dark); }
+  .btn-dark:hover { background: #333330; }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .btn-danger { background: var(--red-light); color: var(--red); border-color: #F0BBBB; }
+  .btn-danger:hover { background: #F5D0D0; }
+  .btn-success { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .msg { padding: 10px 14px; border-radius: 7px; font-size: 13px; margin-top: 10px; }
+  .msg-ok { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+  .msg-err { background: var(--red-light); color: var(--red); border: 1px solid #F0BBBB; }
+  .badge { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 500; }
+  .badge-free { background: var(--green-light); color: var(--green); }
+  .badge-booked { background: var(--accent-light); color: var(--accent); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  .stat { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--dark); line-height: 1; }
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+  td { padding: 10px; border-bottom: 1px solid var(--border); color: var(--dark); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--cream); }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+  .filter-row select, .filter-row input { padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--dark); outline: none; }
+  .filter-row select:focus, .filter-row input:focus { border-color: var(--dark); }
+  .interviewer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 4px; }
+  .interviewer-card { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .interviewer-name { font-weight: 500; font-size: 14px; margin-bottom: 6px; }
+  .interviewer-stats { font-size: 12px; color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .link-box { background: var(--cream); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-size: 12px; font-family: monospace; word-break: break-all; color: var(--mid); }
+  .nav-links { display: flex; gap: 10px; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 5px 12px; border: 1px solid var(--border); border-radius: 99px; }
+  .nav-link:hover { color: var(--dark); border-color: var(--dark); }
+  @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr; } header { padding: 1rem; } .container { padding: 1rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-mark">E</div>
+    <div class="header-text">
+      <h1>ENAI Summer School 2026</h1>
+      <p>Admin panel</p>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html" target="_blank">Student page ↗</a>
+    <a class="nav-link" href="interviewer.html" target="_blank">Interviewer panel ↗</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="stat-total">–</div><div class="stat-lbl">Total slots</div></div>
+    <div class="stat"><div class="stat-num" id="stat-booked">–</div><div class="stat-lbl">Booked</div></div>
+    <div class="stat"><div class="stat-num" id="stat-free">–</div><div class="stat-lbl">Available</div></div>
+    <div class="stat"><div class="stat-num" id="stat-interviewers">–</div><div class="stat-lbl">Interviewers</div></div>
+  </div>
+
+  <!-- INTERVIEWER OVERVIEW -->
+  <div class="card">
+    <p class="card-title">Interviewers overview</p>
+    <div class="interviewer-grid" id="interviewer-grid">
+      <p style="font-size:13px;color:var(--muted)">Loading…</p>
+    </div>
+  </div>
+
+  <!-- ALL SLOTS TABLE -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+      <p class="card-title" style="margin:0">All slots & bookings</p>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="exportCSV()">↓ Export CSV</button>
+        <button class="btn btn-sm" onclick="loadAll()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <select id="filter-interviewer" onchange="applyFilters()">
+        <option value="">All interviewers</option>
+      </select>
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">All statuses</option>
+        <option value="free">Free only</option>
+        <option value="booked">Booked only</option>
+      </select>
+      <input type="text" id="filter-search" placeholder="Search student name or email…" oninput="applyFilters()" style="min-width:220px" />
+      <button class="btn btn-sm" onclick="clearFilters()">Clear</button>
+    </div>
+
+    <div class="table-wrap">
+      <div id="slots-table"><p style="font-size:13px;color:var(--muted)">Loading…</p></div>
+    </div>
+    <div id="table-msg"></div>
+  </div>
+
+  <!-- INTERVIEWER LINKS -->
+  <div class="card">
+    <p class="card-title">Interviewer panel links</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Send each interviewer their personal link to add slots.</p>
+    <div id="interviewer-links"><p style="font-size:13px;color:var(--muted)">Loading…</p></div>
+  </div>
+
+</div>
+
+<script>
+  const SB_URL = 'https://ukxprhzvevhvmvzjerhc.supabase.co';
+  const SB_KEY = 'sb_publishable_jmBJo5Fg999Pha9YOwkHsw_1F0XkKhD';
+  const CEST_OFFSET = 2, DUBAI_OFFSET = 4;
+  const BASE_URL = 'https://veronikakrasnican.github.io/enai-booking';
+  let allSlots = [];
+  let allInterviewers = [];
+
+  function api(path, opts = {}) {
+    return fetch(SB_URL + '/rest/v1/' + path, {
+      ...opts,
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', ...(opts.headers||{}) }
+    });
+  }
+
+  function fmtDate(d) {
+    if (!d) return '';
+    return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  }
+
+  function fmtTimes(slot_time) {
+    const cestTime = slot_time.slice(0,5);
+    const [ch, cm] = cestTime.split(':').map(Number);
+    const dh = ch + (DUBAI_OFFSET - CEST_OFFSET);
+    return { cestTime, dubaiTime: String(dh % 24).padStart(2,'0') + ':' + String(cm).padStart(2,'0') };
+  }
+
+  async function loadAll() {
+    try {
+      const [slotsRes, intRes] = await Promise.all([
+        api('slots?order=slot_date.asc,slot_time.asc'),
+        api('interviewers?order=name.asc')
+      ]);
+      allSlots = await slotsRes.json();
+      allInterviewers = await intRes.json();
+
+      // Stats
+      const booked = allSlots.filter(s => s.booked);
+      document.getElementById('stat-total').textContent = allSlots.length;
+      document.getElementById('stat-booked').textContent = booked.length;
+      document.getElementById('stat-free').textContent = allSlots.length - booked.length;
+      document.getElementById('stat-interviewers').textContent = allInterviewers.length;
+
+      // Interviewer overview cards
+      const names = [...new Set(allSlots.map(s => s.interviewer))];
+      document.getElementById('interviewer-grid').innerHTML = names.map(name => {
+        const mine = allSlots.filter(s => s.interviewer === name);
+        const myBooked = mine.filter(s => s.booked).length;
+        return `<div class="interviewer-card">
+          <div class="interviewer-name">${name}</div>
+          <div class="interviewer-stats">${mine.length} slots · ${myBooked} booked · ${mine.length - myBooked} free</div>
+        </div>`;
+      }).join('');
+
+      // Populate filter dropdown
+      const sel = document.getElementById('filter-interviewer');
+      sel.innerHTML = '<option value="">All interviewers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+
+      // Interviewer links
+      document.getElementById('interviewer-links').innerHTML = allInterviewers.map(i => `
+        <div style="margin-bottom:12px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:4px">${i.name}</div>
+          <div class="link-box">${BASE_URL}/interviewer.html?name=${encodeURIComponent(i.name)}</div>
+        </div>
+      `).join('');
+
+      applyFilters();
+    } catch(e) {
+      document.getElementById('slots-table').innerHTML = `<p style="font-size:13px;color:var(--red)">Error: ${e.message}</p>`;
+    }
+  }
+
+  function applyFilters() {
+    const interviewer = document.getElementById('filter-interviewer').value;
+    const status = document.getElementById('filter-status').value;
+    const search = document.getElementById('filter-search').value.toLowerCase();
+
+    let filtered = allSlots.filter(s => {
+      if (interviewer && s.interviewer !== interviewer) return false;
+      if (status === 'free' && s.booked) return false;
+      if (status === 'booked' && !s.booked) return false;
+      if (search && !((s.student_name||'').toLowerCase().includes(search) || (s.student_email||'').toLowerCase().includes(search))) return false;
+      return true;
+    });
+
+    renderTable(filtered);
+  }
+
+  function clearFilters() {
+    document.getElementById('filter-interviewer').value = '';
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-search').value = '';
+    applyFilters();
+  }
+
+  function renderTable(slots) {
+    const el = document.getElementById('slots-table');
+    if (!slots.length) { el.innerHTML = '<p style="font-size:13px;color:var(--muted)">No slots match your filters.</p>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr>
+        <th>Date</th><th>CEST</th><th>Dubai</th><th>Interviewer</th><th>Status</th><th>Student</th><th>Email</th><th>Booked at</th><th></th>
+      </tr></thead>
+      <tbody>${slots.map(s => {
+        const { cestTime, dubaiTime } = fmtTimes(s.slot_time);
+        return `<tr>
+          <td>${fmtDate(s.slot_date)}</td>
+          <td>${cestTime}</td>
+          <td>${dubaiTime}</td>
+          <td>${s.interviewer}</td>
+          <td><span class="badge ${s.booked ? 'badge-booked' : 'badge-free'}">${s.booked ? 'Booked' : 'Free'}</span></td>
+          <td>${s.student_name || '–'}</td>
+          <td>${s.student_email || '–'}</td>
+          <td style="white-space:nowrap">${s.booked_at ? new Date(s.booked_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '–'}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="deleteSlot('${s.id}', ${s.booked})">Delete</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  }
+
+  async function deleteSlot(id, isBooked) {
+    const msg = isBooked
+      ? 'This slot is already booked by a student. Are you sure you want to delete it?'
+      : 'Delete this slot?';
+    if (!confirm(msg)) return;
+    try {
+      const r = await api('slots?id=eq.' + id, { method: 'DELETE' });
+      if (r.ok) {
+        document.getElementById('table-msg').innerHTML = '<div class="msg msg-ok">Slot deleted.</div>';
+        setTimeout(() => { document.getElementById('table-msg').innerHTML = ''; loadAll(); }, 1000);
+      }
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  function exportCSV() {
+    const rows = [['Date', 'Time CEST', 'Time Dubai', 'Interviewer', 'Status', 'Student Name', 'Student Email', 'Booked At']];
+    allSlots.forEach(s => {
+      const { cestTime, dubaiTime } = fmtTimes(s.slot_time);
+      rows.push([
+        fmtDate(s.slot_date), cestTime, dubaiTime, s.interviewer,
+        s.booked ? 'Booked' : 'Free',
+        s.student_name || '', s.student_email || '',
+        s.booked_at ? new Date(s.booked_at).toLocaleString('en-GB') : ''
+      ]);
+    });
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'ENAI_Summer_School_2026_Bookings.csv';
+    a.click();
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
