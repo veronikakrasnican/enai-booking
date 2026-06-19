@@ -190,13 +190,16 @@
       const sel = document.getElementById('filter-interviewer');
       sel.innerHTML = '<option value="">All interviewers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
 
-      // Interviewer links
-      document.getElementById('interviewer-links').innerHTML = allInterviewers.map(i => `
-        <div style="margin-bottom:12px">
-          <div style="font-size:13px;font-weight:500;margin-bottom:4px">${i.name}</div>
-          <div class="link-box">${BASE_URL}/interviewer.html?name=${encodeURIComponent(i.name)}</div>
-        </div>
-      `).join('');
+     // Interviewer links — derived from all unique names ever seen in slots
+      const linkNames = [...new Set(allSlots.map(s => s.interviewer))].sort();
+      document.getElementById('interviewer-links').innerHTML = linkNames.length
+        ? linkNames.map(name => `
+          <div style="margin-bottom:12px">
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">${name}</div>
+            <div class="link-box">${BASE_URL}/interviewer.html?name=${encodeURIComponent(name)}</div>
+          </div>
+        `).join('')
+        : '<p style="font-size:13px;color:var(--muted)">No interviewers yet.</p>';
 
       applyFilters();
     } catch(e) {
