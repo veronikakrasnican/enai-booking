@@ -173,7 +173,7 @@
       document.getElementById('stat-total').textContent = allSlots.length;
       document.getElementById('stat-booked').textContent = booked.length;
       document.getElementById('stat-free').textContent = allSlots.length - booked.length;
-      document.getElementById('stat-interviewers').textContent = allInterviewers.length;
+      document.getElementById('stat-interviewers').textContent = new Set(allSlots.map(s => s.interviewer)).size;
 
       // Interviewer overview cards
       const names = [...new Set(allSlots.map(s => s.interviewer))];
